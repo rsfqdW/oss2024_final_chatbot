@@ -3,7 +3,8 @@ from chatbot import Chat, register_call
 import os
 import wikipedia
 import python_weather
-
+import random  # random 모듈 추가
+from horoscope_data import horoscopes  # 추가된 부분
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -42,6 +43,13 @@ def who_is(session=None, query='South Korea'):
         pass
     return "I don't know about "+query
 
+
+@register_call("horoscope")
+def get_horoscope(session=None, sign = 'leo'):
+    try:
+        return random.choice(horoscopes)
+    except Exception:
+        return "I don't know the general horoscope for today"
 
 first_question = "Hi, how are you?"
 chat = Chat(os.path.join(os.path.dirname(os.path.abspath(__file__)), "chatbot_test.template"))
