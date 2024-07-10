@@ -6,10 +6,9 @@ from threading import Thread, Event
 from time import sleep
 from deep_translator import GoogleTranslator
 from PIL import Image, ImageTk
-import pytesseract
+import easyocr
 
-##########테스트 하시는 분 컴퓨터에 설치된 tesseract 경로로 변경 하셔야 됩니다!!##########
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+reader = easyocr.Reader(['ko', 'en'])
 
 translator_en_kr = GoogleTranslator(source='en', target='korean')
 translator_kr_en = GoogleTranslator(source='korean', target='en')
@@ -238,13 +237,14 @@ class ChatGUI:
             image.thumbnail((200, 200))
             img = ImageTk.PhotoImage(image)
             self.show_image_bubble(img, bot=False)
-            self.process_image(file_path)  # OCR 처리 메서드 추가
+            # OCR을 수행하고 결과를 챗봇에 표시
+            self.thread_event.clear()
+            self.user_thread = Thread(target=self.ocr_image, args=(file_path,))
+            self.user_thread.start()
             
-    # OCR 함수 추가
-    def process_image(self, file_path):
-        try:
-            image = Image.open(file_path)
-            text = pytesseract.image_to_string(image, lang='eng+kor')  # 언어 설정에 맞게 변경
-            self.add_bot_message(text)  # OCR로 추출된 텍스트를 봇 메시지로 추가
-        except Exception as e:
-            self.add_bot_message(f"tesseract를 설치하시고 chat_gui\__init__.py의 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe' 부분을 본인의 설치된 경로로 변경해주세요!")
+    def ocr_image(self, file_path):
+        # easyocr로 OCR 수행
+        result = reader.readtext(file_path, detail=0)
+        ocr_text = "\n".join(result)
+        self.add_bot_message(f"OCR 결과:\n{ocr_text}")
+        self.thread_event.set()
