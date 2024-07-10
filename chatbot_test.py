@@ -41,6 +41,13 @@ def who_is(session=None, query='South Korea'):
     except Exception:
         pass
     return "I don't know about "+query
+    
+@register_call("horoscope")
+def get_horoscope(session=None, sign = 'leo'):
+    try:
+        return random.choice(horoscopes)
+    except Exception:
+        return "I don't know the general horoscope for today"
 
 
 first_question = "Hi, how are you?"
