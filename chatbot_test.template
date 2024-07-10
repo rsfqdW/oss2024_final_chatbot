@@ -4,6 +4,11 @@
 {% endblock %}
 
 {% block %}
+    {% client %}(Menu Recommendation|Dinner menu Recommendation|recommend me a dinner menu|what should I have for dinner|suggest a dinner menu|what to eat for dinner|dinner recommendation|recommend a dinner menu) (?P<sign>.*) {% endclient %}
+    {% response %}{% call food: %sign %}{% endresponse %}
+{% endblock %}
+
+{% block %}
 	{% client %}(do you know about|who is|what is) (?P<query>.*){% endclient %}
 	{% response %}{% call wiki: %query %}{% endresponse %}
 {% endblock %}
