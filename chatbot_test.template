@@ -1,4 +1,9 @@
 {% block %}
+    {% client %}(what is my horoscope for|horoscope for|what is the horoscope for|today's horoscope|today's fortune is|) (?P<sign>.*) {% endclient %}
+    {% response %}{% call horoscope: %sign %}{% endresponse %}
+{% endblock %}
+
+{% block %}
 	{% client %}(do you know about|who is|what is) (?P<query>.*){% endclient %}
 	{% response %}{% call wiki: %query %}{% endresponse %}
 {% endblock %}
