@@ -3,6 +3,8 @@ from chatbot import Chat, register_call
 import os
 import wikipedia
 import python_weather
+import random  # random 모듈 추가
+from horoscope_data import horoscopes  # 추가된 부분
 
 
 import warnings
