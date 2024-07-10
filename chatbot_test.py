@@ -4,7 +4,6 @@ import os
 import wikipedia
 import python_weather
 from horoscope_data import horoscopes
-import datetime
 from food_data import KoreanCuisine,ChineseCuisine,WesternCuisine,JapaneseCuisine,ItalianCuisine
 import requests
 import datetime
