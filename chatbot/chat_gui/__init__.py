@@ -63,8 +63,8 @@ class ChatGUI:
         # initialize tkinter stop
         
         # 이미지 업로드 버튼 추가
-        upload_image_button = Button(self.root, text="Do OCR", command=self.upload_image)
-        upload_image_button.grid(row=2, column=0, padx=5, pady=10, sticky=W)
+        upload_image_button = Button(self.root, text="OCR 하기", command=self.upload_image)
+        upload_image_button.grid(row=2, column=0, padx=5, pady=10, sticky=E)
 
         # get the last bubble objects to move them up for next bubbles
         self.last_bubble = None
