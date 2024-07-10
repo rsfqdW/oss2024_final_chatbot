@@ -4,7 +4,7 @@ import os
 import wikipedia
 import python_weather
 import requests
-from datetime import datetime, timedelta
+import datetime
 import random  # random 모듈 추가
 from horoscope_data import horoscopes  # 추가된 부분
 
@@ -65,7 +65,7 @@ def get_horoscope(session=None, sign = 'leo'):
 @register_call("box_office")
 def call_box_office(session=None, query=None):
     api_key = "a734e5765f4da2c8539af53bbc793e5d"  # API 키
-    target_date = (datetime.now() - timedelta(1)).strftime('%Y%m%d')
+    target_date = (datetime.datetime.now() - datetime.timedelta(1)).strftime('%Y%m%d')
     url = f'http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key={api_key}&targetDt={target_date}'
     response = requests.get(url)
     if response.status_code == 200:
