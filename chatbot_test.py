@@ -3,9 +3,10 @@ from chatbot import Chat, register_call
 import os
 import wikipedia
 import python_weather
-import random  # random 모듈 추가
-from horoscope_data import horoscopes  # 추가된 부분
+import random
+from horoscope_data import horoscopes
 import datetime
+from food_data import KoreanCuisine,ChineseCuisine,WesternCuisine,JapaneseCuisine,ItalianCuisine
 
 
 import warnings
@@ -61,6 +62,23 @@ def get_horoscope(session=None, sign = 'leo'):
         return random.choice(horoscopes)
     except Exception:
         return "I don't know the general horoscope for today"
+       
+@register_call("food")
+def get_food(session=None, sign = "Korean food"):
+    try:
+        random_number = random.randint(1,5)
+        if random_number == 1:
+            return random.choice(KoreanCuisine)
+        elif random_number == 2:
+            return random.choice(ChineseCuisine)
+        elif random_number == 3:
+            return random.choice(WesternCuisine)
+        elif random_number == 4:
+            return random.choice(JapaneseCuisine)
+        elif random_number == 5:
+            return random.choice(ItalianCuisine)
+    except Exception:
+        return sign
 
 
 first_question = "Hi, how are you?"
