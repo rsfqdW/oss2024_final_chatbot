@@ -17,3 +17,8 @@
     {% client %}(Do you know|Do you have any idea) (?P<query>.*){% endclient %}
     {% response %}{% call do_you_know: %query %}{% endresponse %}
 {% endblock %}
+
+{% block %}
+    {% client %}(box office|box office ranking){% endclient %}
+    {% response %}{% call box_office: %}{% endresponse %}
+{% endblock %}

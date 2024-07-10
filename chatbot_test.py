@@ -3,10 +3,10 @@ from chatbot import Chat, register_call
 import os
 import wikipedia
 import python_weather
+import requests
+from datetime import datetime, timedelta
 import random  # random 모듈 추가
 from horoscope_data import horoscopes  # 추가된 부분
-import datetime
-
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -62,6 +62,20 @@ def get_horoscope(session=None, sign = 'leo'):
     except Exception:
         return "I don't know the general horoscope for today"
 
+@register_call("box_office")
+def call_box_office(session=None, query=None):
+    api_key = "a734e5765f4da2c8539af53bbc793e5d"  # API 키
+    target_date = (datetime.now() - timedelta(1)).strftime('%Y%m%d')
+    url = f'http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key={api_key}&targetDt={target_date}'
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        box_office_result = "box office ranking:\n"
+        for item in data['boxOfficeResult']['dailyBoxOfficeList']:
+            box_office_result += f"{item['rank']}. {item['movieNm']}\n"
+        return box_office_result
+    else:
+        return "Failed to retrieve box office data"
 
 first_question = "Hi, how are you?"
 chat = Chat(os.path.join(os.path.dirname(os.path.abspath(__file__)), "chatbot_test.template"))
