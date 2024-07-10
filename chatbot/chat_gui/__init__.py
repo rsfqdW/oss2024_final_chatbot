@@ -1,11 +1,15 @@
 from os import path
 from tkinter import Tk, Canvas, Frame, Label, \
-    ALL, Button, Entry, END, Scrollbar, N, S, E, W, LEFT, PhotoImage
+    ALL, Button, Entry, END, Scrollbar, N, S, E, W, LEFT, PhotoImage, filedialog
 from tkinter.constants import DISABLED, NORMAL, RIGHT
 from threading import Thread, Event
 from time import sleep
 from deep_translator import GoogleTranslator
+from PIL import Image, ImageTk
+import pytesseract
 
+##########테스트 하시는 분 컴퓨터에 설치된 tesseract 경로로 변경 하셔야 됩니다!!##########
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 translator_en_kr = GoogleTranslator(source='en', target='korean')
 translator_kr_en = GoogleTranslator(source='korean', target='en')
@@ -61,6 +65,10 @@ class ChatGUI:
         self.bot_image = PhotoImage(file=path.join(self.data_path, "robot.png"))
         self.user_image = PhotoImage(file=path.join(self.data_path, "user.png"))
         # initialize tkinter stop
+        
+        # 이미지 업로드 버튼 추가
+        upload_image_button = Button(self.root, text="OCR 하기", command=self.upload_image)
+        upload_image_button.grid(row=2, column=0, padx=5, pady=10, sticky=E)
 
         # get the last bubble objects to move them up for next bubbles
         self.last_bubble = None
@@ -119,6 +127,26 @@ class ChatGUI:
         self.canvas.create_polygon(self.draw_triangle(widget, bot), fill=bg_color, outline=bg_color)
         self.add_icon(widget, bot)
 
+    #이미지 업로드용 사용자 버블 추가
+    def show_image_bubble(self, img, bot=True):
+        if self.last_bubble:
+            self.canvas.move(ALL, 0, -(self.last_bubble.winfo_height() + 10))
+        bg_color = "light blue" if bot else "light grey"
+        frame = Frame(self.canvas, bg=bg_color)
+        self.last_bubble = frame
+
+        widget = self.canvas.create_window(50 if bot else 700, 440, window=frame, anchor='nw' if bot else 'ne')
+
+        chat_label = Label(frame, image=img, bg=bg_color)
+        chat_label.image = img
+        chat_label.pack(anchor="w" if bot else 'e', side=LEFT if bot else RIGHT, pady=10, padx=10)
+
+        self.root.update_idletasks()
+        self.canvas.config(scrollregion=self.canvas.bbox("all"))
+
+        self.canvas.create_polygon(self.draw_triangle(widget, bot), fill=bg_color, outline=bg_color)
+        self.add_icon(widget, bot)
+        
     def add_icon(self, widget, bot=True):
         """
         Add the image to given widget.
@@ -201,3 +229,22 @@ class ChatGUI:
         Helper method to add the newline in the InputBox
         """
         self.user_input_box.insert(END, "\n")
+        
+    # 이미지 업로드 함수 추가
+    def upload_image(self):
+        file_path = filedialog.askopenfilename()
+        if file_path:
+            image = Image.open(file_path)
+            image.thumbnail((200, 200))
+            img = ImageTk.PhotoImage(image)
+            self.show_image_bubble(img, bot=False)
+            self.process_image(file_path)  # OCR 처리 메서드 추가
+            
+    # OCR 함수 추가
+    def process_image(self, file_path):
+        try:
+            image = Image.open(file_path)
+            text = pytesseract.image_to_string(image, lang='eng+kor')  # 언어 설정에 맞게 변경
+            self.add_bot_message(text)  # OCR로 추출된 텍스트를 봇 메시지로 추가
+        except Exception as e:
+            self.add_bot_message(f"tesseract를 설치하시고 chat_gui\__init__.py의 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe' 부분을 본인의 설치된 경로로 변경해주세요!")
